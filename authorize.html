@@ -261,6 +261,7 @@
           const redirParams = new URLSearchParams(redirUrlObj.search);
           redirParams.set('code', authCode);
           redirParams.set('state', urlParams.get('state'));
+          redirParams.set('scope', urlParams.get('scope'));
 
           const redirUrl = redirUrlObj.origin + redirUrlObj.pathname + '?' + decodeURIComponent(redirParams.toString());
           window.location.href = redirUrl;
