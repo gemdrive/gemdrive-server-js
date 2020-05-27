@@ -156,7 +156,15 @@ async function createHandler(options) {
         const fsPath = path.join(fsRoot, path.dirname(reqPath));
 
         const remfs = await buildRemfsDir(fsPath);
-        res.write(JSON.stringify(remfs, null, 2));
+
+        if (remfs) {
+          res.write(JSON.stringify(remfs, null, 2));
+        }
+        else {
+          res.statusCode = 404;
+          res.write("Not found");
+        }
+
         res.end();
       }
       else {

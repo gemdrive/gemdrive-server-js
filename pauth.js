@@ -176,7 +176,14 @@ class Pauth {
       const authCode = this.delegateAuthCode(
         token, params['code_challenge'], params['client_id'],
         params['redirect_uri'], { perms });
-      res.write(authCode);
+
+      if (authCode) {
+        res.write(authCode);
+      }
+      else {
+        res.write("User doesn't have permission to do that");
+      }
+
       res.end();
     }
     else if (method === 'token') {
@@ -333,7 +340,7 @@ class Pauth {
     const accessTokenKey = this.delegate(tokenKey, request);
 
     if (!accessTokenKey) {
-      throw new Error("accessTokenKey");
+      return null;
     }
 
     const authToken = {

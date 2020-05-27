@@ -75,10 +75,7 @@ async function buildRemfsDir(fsPath) {
     filenames = await fs.promises.readdir(fsPath);
   }
   catch (e) {
-    res.statusCode = 404;
-    res.write("Not Found");
-    res.end();
-    return;
+    return null;
   }
 
   const remfs = {
