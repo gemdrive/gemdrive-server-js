@@ -288,6 +288,7 @@ async function serveItem(req, res, fsRoot, rootPath, reqPath) {
       const originalSize = stats.size;
 
       res.setHeader('Content-Range', `bytes ${range.start}-${range.end}/${originalSize}`);
+      res.setHeader('Content-Length', range.end - range.start + 1);
       res.statusCode = 206;
 
       //sendFile = sendFile.slice(range.start, range.end + 1);
@@ -302,6 +303,7 @@ async function serveItem(req, res, fsRoot, rootPath, reqPath) {
     }
 
     res.setHeader('Accept-Ranges', 'bytes');
+    //res.setHeader('Content-Type', 'application/octet-stream');
 
     const mime = getMime(path.extname(reqPath));
     if (mime) {
