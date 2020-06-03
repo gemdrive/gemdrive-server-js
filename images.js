@@ -43,7 +43,8 @@ async function handleImage(req, res, fsRoot, reqPath, pauth, emit) {
     return;
   }
 
-  if (srcPathStr.includes('.remfs/images')) {
+  // this avoids recursively creating thumbnails
+  if (srcPathStr.includes('.gemdrive/images')) {
     const stream = fs.createReadStream(srcFsPath);
 
     stream.pipe(res);

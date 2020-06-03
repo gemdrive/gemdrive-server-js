@@ -64,7 +64,7 @@ async function renderHtmlDir(req, res, rootPath, reqPath, fsPath) {
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>remFS</title>
+        <title>GemDrive</title>
       </head>
 
       <body>

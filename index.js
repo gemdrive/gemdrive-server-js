@@ -139,7 +139,7 @@ async function createHandler(options) {
         //}
       }
 
-      if (reqPath.startsWith('/.remfs/images')) {
+      if (reqPath.startsWith('/.gemdrive/images')) {
         handleImage(req, res, fsRoot, reqPath, pauth, emit);
         return;
       }
