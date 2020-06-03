@@ -1,13 +1,13 @@
 {
-  "name": "remfs-server",
-  "version": "0.7.0",
+  "name": "gemdrive-server",
+  "version": "0.8.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "remfs-server": "./cli.js"
+    "gemdrive-server": "./cli.js"
   },
   "author": "Anders Pitman",
   "license": "MIT",
