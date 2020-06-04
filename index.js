@@ -146,8 +146,7 @@ async function createHandler(options) {
 
       if (!perms.canRead(reqPath)) {
         res.statusCode = 403;
-        res.write("Unauthorized");
-        res.end();
+        sendLoginPage(res);
         return;
       }
 
@@ -335,6 +334,20 @@ async function parseBody(req) {
       reject(err);
     });
   });
+}
+
+async function sendLoginPage(res) {
+
+  const filePath = path.join(__dirname, 'login.html');
+  const stat = await fs.promises.stat(filePath);
+
+  res.writeHead(200, {
+    'Content-Type': 'text/html',
+    'Content-Length': stat.size,
+  });
+
+  const f = fs.createReadStream(filePath);
+  f.pipe(res);
 }
 
 
