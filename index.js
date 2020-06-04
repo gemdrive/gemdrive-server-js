@@ -31,7 +31,9 @@ async function createHandler(options) {
     securityMode = options.securityMode;
   }
 
-  const pauth = await new PauthBuilder().build();
+  const pauth = await new PauthBuilder()
+    .loginPagePath(path.join(__dirname, 'login.html'))
+    .build();
 
   const listeners = {};
   const emit = (fullPathStr, event) => {
