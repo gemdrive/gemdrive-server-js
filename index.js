@@ -31,8 +31,15 @@ async function createHandler(options) {
     securityMode = options.securityMode;
   }
 
+
+  let ownerEmail;
+  if (options && options.ownerEmail) {
+    ownerEmail = options.ownerEmail;
+  }
+
   const pauth = await new PauthBuilder()
     .loginPagePath(path.join(__dirname, 'login.html'))
+    .ownerEmail(ownerEmail)
     .build();
 
   const listeners = {};
@@ -343,7 +350,7 @@ async function sendLoginPage(res) {
   const filePath = path.join(__dirname, 'login.html');
   const stat = await fs.promises.stat(filePath);
 
-  res.writeHead(200, {
+  res.writeHead(403, {
     'Content-Type': 'text/html',
     'Content-Length': stat.size,
   });

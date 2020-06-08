@@ -17,6 +17,7 @@ const port = args['--port'] ? args['--port'] : 3838;
 const dir = args['--dir'] ? args['--dir'] : './';
 const rootPath = args['--root-path'] ? args['--root-path'] : '';
 const securityMode = args['--security-mode'] ? args['--security-mode'] : '';
+const ownerEmail = args['--email'] ? args['--email'] : '';
 
 // Listen on all interfaces by default (0.0.0.0), but if securityMode is
 // 'local' only bind to localhost unless overridden.
@@ -30,7 +31,7 @@ else {
 
 
 (async () => {
-  const remfsHandler = await createHandler({ rootPath, dir, securityMode });
+  const remfsHandler = await createHandler({ rootPath, dir, securityMode, ownerEmail });
   const httpServer = http.createServer(remfsHandler);
   if (securityMode === 'local') {
     httpServer.listen(port, host);
