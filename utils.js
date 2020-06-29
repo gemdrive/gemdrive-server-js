@@ -103,6 +103,9 @@ async function buildRemfsDir(fsPath) {
 
     totalSize += stats.size;
 
+    const modIso = stats.mtime.toISOString();
+    modTime = modIso.slice(0, -5) + 'Z';
+
     if (stats.isDirectory()) {
       remfs.children[filename] = {
         type: 'dir',
@@ -114,6 +117,7 @@ async function buildRemfsDir(fsPath) {
       remfs.children[filename] = {
         type: 'file',
         size: stats.size,
+        modTime,
       };
     }
   }
