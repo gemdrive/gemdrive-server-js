@@ -68,7 +68,7 @@ function encodePath(parts) {
   return '/' + parts.join('/');
 }
 
-async function buildRemfsDir(fsPath) {
+async function buildGemDriveDir(fsPath) {
 
   let filenames;
   try {
@@ -78,13 +78,13 @@ async function buildRemfsDir(fsPath) {
     return null;
   }
 
-  const remfs = {
+  const gemData = {
     type: 'dir',
     children: {},
   };
 
-  const localRemfs = await readLocalRemfs(fsPath);
-  Object.assign(remfs, localRemfs);
+  const localGemData = await readLocalRemfs(fsPath);
+  Object.assign(gemData, localGemData);
 
   let totalSize = 0;
 
@@ -107,14 +107,14 @@ async function buildRemfsDir(fsPath) {
     modTime = modIso.slice(0, -5) + 'Z';
 
     if (stats.isDirectory()) {
-      remfs.children[filename] = {
+      gemData.children[filename] = {
         type: 'dir',
         size: stats.size,
       };
-      //remfs.children[filename] = await buildRemfsDir(childFsPath);
+      //gemData.children[filename] = await buildGemDriveDir(childFsPath);
     }
     else {
-      remfs.children[filename] = {
+      gemData.children[filename] = {
         type: 'file',
         size: stats.size,
         modTime,
@@ -122,9 +122,9 @@ async function buildRemfsDir(fsPath) {
     }
   }
 
-  remfs.size = totalSize;
+  gemData.size = totalSize;
 
-  return remfs;
+  return gemData;
 }
 
 async function readLocalRemfs(fsPath) {
@@ -165,6 +165,6 @@ module.exports = {
   parseToken,
   parsePath,
   encodePath,
-  buildRemfsDir,
+  buildGemDriveDir,
   getMime,
 };
