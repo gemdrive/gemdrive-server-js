@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
-const { parseToken, parsePath, encodePath, buildRemfsDir } = require('./utils.js');
+const { parseToken, parsePath, encodePath, buildGemDriveDir } = require('./utils.js');
 
 
 async function handleImage(req, res, fsRoot, reqPath, pauth, emit) {
@@ -29,7 +29,7 @@ async function handleImage(req, res, fsRoot, reqPath, pauth, emit) {
 
     const fsPath = path.join(fsRoot, path.dirname(reqPath));
 
-    const remfs = await buildRemfsDir(fsPath);
+    const remfs = await buildGemDriveDir(fsPath);
     res.write(JSON.stringify(remfs, null, 2));
     res.end();
     return;

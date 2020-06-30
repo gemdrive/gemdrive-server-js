@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { parseToken, parsePath, encodePath, buildRemfsDir } = require('./utils.js');
+const { parseToken, parsePath, encodePath } = require('./utils.js');
 
 async function handleConcat(req, res, params, fsRoot, reqPath, pauth) {
   console.log(reqPath, params);

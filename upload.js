@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { ByteCounterStream } = require('./byte_counter.js');
-const { parseToken, parsePath, encodePath, buildRemfsDir } = require('./utils.js');
+const { parseToken, parsePath, encodePath, buildGemDriveDir } = require('./utils.js');
 
 
 async function handleUpload(req, res, fsRoot, reqPath, pauth, emit) {
@@ -67,7 +67,7 @@ async function handleUpload(req, res, fsRoot, reqPath, pauth, emit) {
     const remfsPath = path.dirname(fsPath);
     const filename = path.basename(fsPath);
 
-    const remfs = await buildRemfsDir(remfsPath);
+    const remfs = await buildGemDriveDir(remfsPath);
     res.write(JSON.stringify(remfs.children[filename], null, 2));
 
     emit(reqPath, {

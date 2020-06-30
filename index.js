@@ -180,6 +180,8 @@ async function createHandler(options) {
         const gemPath = reqPath.slice('/.gemdrive/meta'.length);
         const fsPath = path.join(fsRoot, path.dirname(gemPath));
 
+        console.log(fsPath);
+
         const gemData = await buildGemDriveDir(fsPath);
 
         if (gemData) {
