@@ -91,7 +91,12 @@ async function createHandler(options) {
 
     const perms = await pauth.getPerms(token);
 
-    if (params['pauth-method'] !== undefined) {
+    if (reqPath.startsWith('/.gemdrive/auth/grant')) {
+      await sendGrantPage(res);
+      return;
+    }
+
+    if (params['pauth-method'] !== undefined || reqPath.startsWith('/.gemdrive/auth')) {
       await pauth.handle(req, res, rootPath, token);
       return;
     } 
@@ -367,6 +372,20 @@ async function parseBody(req) {
 async function sendLoginPage(res) {
 
   const filePath = path.join(__dirname, 'login.html');
+  const stat = await fs.promises.stat(filePath);
+
+  res.writeHead(403, {
+    'Content-Type': 'text/html',
+    'Content-Length': stat.size,
+  });
+
+  const f = fs.createReadStream(filePath);
+  f.pipe(res);
+}
+
+async function sendGrantPage(res) {
+
+  const filePath = path.join(__dirname, 'grant.html');
   const stat = await fs.promises.stat(filePath);
 
   res.writeHead(403, {

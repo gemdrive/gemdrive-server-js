@@ -1,0 +1,298 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <style>
+
+      html, body, main {
+        font-family: Verdana;
+        height: 100%;
+      }
+
+      main {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .content {
+        padding: 20px;
+        border: 1px solid #ccc;
+      }
+
+      .header-text {
+        font-size: 18px;
+        margin-bottom: 15px;
+      }
+
+      .perm-list {
+        max-height: 70vh;
+        overflow-y: scroll;
+      }
+      .perm-list-item {
+        margin: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+      }
+
+      .gemdrive-button {
+        border: transparent;
+        font-size: 20px;
+        padding: .5em 1em;
+        cursor: pointer;
+        color: white;
+        border-radius: 4px;
+        text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+      }
+
+      .button-confirm {
+        background: rgb(28, 184, 65);
+        /* this is a green */
+      }
+
+      .button-cancel {
+        background: rgb(202, 60, 60);
+        /* this is a maroon */
+      }
+
+      .button-row {
+        display: flex;
+        justify-content: center;
+      }
+
+      .button-row__button {
+        margin: 10px;
+      }
+
+      #email-container {
+        font-weight: bold;
+      }
+
+      .perms-list {
+        list-style-type: none;
+      }
+
+      .path {
+        padding: .5em 0;
+        font-weight: bold;
+        font-size: 1.2em;
+        font-family: Courier New;
+      }
+
+      .success, .fail {
+        padding: 20px;
+        font-size: 22px;
+        border: 1px solid #ccc;
+      }
+
+    </style>
+  </head>
+
+  <body>
+    <main>
+      <div class='content'>
+        <div class='header-text'>
+          <span id='email-container'></span>
+          requests access to the following:
+        </div>
+        <div class='perm-list'></div>
+
+        <div class='button-row'>
+          <button class='gemdrive-button button-confirm button-row__button'>Approve</button>
+          <button class='gemdrive-button button-cancel button-row__button'>Deny</button>
+        </div>
+      </div>
+
+      <div class='success' hidden>
+        Successfully updated permissions. You may close this tab.
+      </div>
+
+      <div class='fail' hidden>
+        Failed to update permissions. You may close this tab.
+      </div>
+
+    </main>
+
+    <script>
+
+      const contentEl = document.querySelector('.content');
+      const successEl = document.querySelector('.success');
+      const failEl = document.querySelector('.fail');
+      const permListEl = document.querySelector('.perm-list');
+      const emailEl = document.querySelector('#email-container');
+      const authorizeBtnEl = document.querySelector('.button-confirm');
+      const denyBtnEl = document.querySelector('.button-cancel');
+
+      let dialog = null;
+
+      const urlParams = new URLSearchParams(window.location.search);
+
+      const scope = urlParams.get('scope');
+      const email = urlParams.get('email');
+      //history.pushState(null, '', window.location.pathname);
+
+      emailEl.innerText = email;
+
+      const allPerms = parsePermsFromScope(scope);
+
+      if (!allPathsSet(allPerms)) {
+        authorizeBtnEl.setAttribute('disabled', true);
+        authorizeBtnEl.setAttribute('title', "Must make selections");
+      }
+
+      for (let i = 0; i < allPerms.length; i++) {
+
+        const permParams = allPerms[i];
+
+        const item = PermListItem(i, permParams);
+        permListEl.appendChild(item.dom);
+
+        item.dom.addEventListener('perms-changed', (e) => {
+          const { key, perm } = e.detail;
+          allPerms[key].perm = perm;
+        });
+
+      }
+
+      authorizeBtnEl.addEventListener('click', (e) => {
+
+        const driveUri = window.location.href.split('/.gemdrive/auth/grant')[0];
+
+        const grantUrl = driveUri + '/.gemdrive/auth/addPerms';
+
+        fetch(grantUrl, {
+          method: 'POST',
+          body: JSON.stringify({
+            email,
+            requests: allPerms,
+          }),
+        })
+        .then(response => {
+          if (response.status === 200) {
+            return response.text();
+          }
+          else {
+            throw new Error("Failed");
+          }
+        })
+        .then(text => {
+          contentEl.setAttribute('hidden', true);
+          successEl.removeAttribute('hidden');
+        })
+        .catch(e => {
+          contentEl.setAttribute('hidden', true);
+          failEl.removeAttribute('hidden');
+          console.error(e);
+        });
+      });
+
+      denyBtnEl.addEventListener('click', (e) => {
+        contentEl.setAttribute('hidden', true);
+        failEl.removeAttribute('hidden');
+      });
+
+      function allPathsSet(perms) {
+        return perms
+          .map(p => p.path !== undefined && p.path.length > 0)
+          .reduce((acc, curr) => {
+            return acc && curr;
+          }, true);
+      }
+
+
+      function parsePermsFromScope(scope) {
+
+        const allPerms = [];
+
+        const items = scope.split(' ');
+        for (const item of items) {
+          const perms = {};
+          const params = item.split(';');
+          for (const param of params) {
+            const parts = param.split('=');
+            const key = parts[0];
+            const value = parts[1];
+            perms[key] = value.replace(/\[\]/g, ' ');
+          }
+
+          allPerms.push(perms);
+        }
+
+        return allPerms;
+      }
+
+
+      function PermListItem(key, permParams) {
+        const dom = document.createElement('div');
+        dom.classList.add('perm-list-item');
+
+        const pathContainerEl = document.createElement('div');
+        dom.appendChild(pathContainerEl);
+
+        const itemTypeText = permParams.type === 'dir' ? "Directory" : "File";
+        const typeLabelEl = document.createElement('div');
+        pathContainerEl.appendChild(typeLabelEl);
+        typeLabelEl.innerText = itemTypeText;
+
+        if (permParams.hint) {
+          typeLabelEl.innerText += ": " + permParams.hint;
+        }
+
+        const pathEl = document.createElement('div');
+        pathEl.classList.add('path');
+        pathContainerEl.appendChild(pathEl);
+
+        if (permParams.path) {
+          pathEl.innerText = permParams.path;
+        }
+
+        const permsEl = document.createElement('span');
+        dom.appendChild(permsEl);
+        permsEl.classList.add('perms-list');
+
+        const readCheckEl = document.createElement('input');
+        permsEl.appendChild(readCheckEl);
+        readCheckEl.setAttribute('type', 'checkbox');
+        readCheckEl.setAttribute('checked', true);
+        readCheckEl.setAttribute('disabled', true);
+        const readLabelEl = document.createElement('span');
+        permsEl.appendChild(readLabelEl);
+        readLabelEl.innerText = " Read ";
+
+        const writeCheckEl = document.createElement('input');
+        permsEl.appendChild(writeCheckEl);
+        writeCheckEl.setAttribute('type', 'checkbox');
+        const writeLabelEl = document.createElement('span');
+        permsEl.appendChild(writeLabelEl);
+        writeLabelEl.innerText = " Write";
+
+        if (permParams.perm === 'write') {
+          writeCheckEl.setAttribute('checked', true);
+        }
+
+        writeCheckEl.addEventListener('change', (e) => {
+
+          dom.dispatchEvent(new CustomEvent('perms-changed', {
+            bubbles: true,
+            detail: {
+              key,
+              perm: e.target.checked ? 'write' : 'read',
+            },
+          }));
+        });
+
+        function onPathChange(newPath) {
+          pathEl.innerText = newPath;
+        }
+
+        return {
+          dom,
+          onPathChange,
+        };
+      }
+
+    </script>
+  </body>
+</html>
