@@ -1,3 +1,4 @@
+* Store image cache in .gemdrive, not the tree
 * Handle too large of upload JSON.
 * PUT debugging notes
   * Seems to work when authenticated
@@ -22,3 +23,4 @@
 * Fix HTML dir listings with whitespace in names
 * Properly handle permissions for /.remfs/images/. They should match the
   stripped path.
+  * I think this is fixed?
