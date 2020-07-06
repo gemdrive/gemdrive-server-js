@@ -5,7 +5,7 @@ const querystring = require('querystring');
 const http = require('https');
 const { renderHtmlDir } = require('./render_html_dir.js');
 const { PauthBuilder } = require('pauth');
-const { parseToken, parsePath, encodePath, buildGemDriveDir, getMime } = require('./utils.js');
+const { parseToken, parsePath, encodePath, buildTsvListing, buildGemDriveDir, getMime } = require('./utils.js');
 const { handleUpload } = require('./upload.js');
 const { handleDelete } = require('./delete.js');
 const { handleConcat } = require('./concat.js');
@@ -164,7 +164,17 @@ async function createHandler(options) {
         return;
       }
 
-      if (reqPath.endsWith('remfs.json')) {
+      if (reqPath.startsWith('/gemdrive/meta') && reqPath.endsWith('/ls.tsv')) {
+
+        const gemPath = reqPath.slice('/gemdrive/meta'.length);
+        const fsPath = path.join(fsRoot, path.dirname(gemPath));
+
+        const tsv = await buildTsvListing(fsPath);
+
+        res.write(tsv);
+        res.end();
+      }
+      else if (reqPath.endsWith('remfs.json')) {
 
         const fsPath = path.join(fsRoot, path.dirname(reqPath));
 

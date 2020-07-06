@@ -68,6 +68,46 @@ function encodePath(parts) {
   return '/' + parts.join('/');
 }
 
+async function buildTsvListing(fsPath) {
+  let filenames;
+  try {
+    filenames = await fs.promises.readdir(fsPath);
+  }
+  catch (e) {
+    res.end();
+    return null;
+  }
+
+  let tsv = '';
+
+  for (const filename of filenames) {
+    const childFsPath = path.join(fsPath, filename);
+
+    let stats;
+    try {
+      stats = await fs.promises.stat(childFsPath);
+    }
+    catch (e) {
+      console.error("This one shouldn't happen");
+      console.error(e);
+      continue;
+    }
+
+    const modIso = stats.mtime.toISOString();
+    modTime = modIso.slice(0, -5) + 'Z';
+
+    let outFilename = filename;
+    if (stats.isDirectory()) {
+      outFilename = filename + '/';
+    }
+
+    const line = `${outFilename}\t${modTime}\t${stats.size}\n`;
+    tsv += line;
+  }
+
+  return tsv;
+}
+
 async function buildGemDriveDir(fsPath) {
 
   let filenames;
@@ -165,6 +205,7 @@ module.exports = {
   parseToken,
   parsePath,
   encodePath,
+  buildTsvListing,
   buildGemDriveDir,
   getMime,
 };
