@@ -31,6 +31,12 @@ function parseToken(req) {
     }
   }
 
+  if (req.headers['authorization']) {
+    const parts = req.headers['authorization'].split(' ');
+    const token = parts[1];
+    return token;
+  }
+
   return null;
 }
 
