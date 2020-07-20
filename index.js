@@ -164,7 +164,16 @@ async function createHandler(options) {
         return;
       }
 
-      if (reqPath.startsWith('/gemdrive/meta') && reqPath.endsWith('/ls.tsv')) {
+      if (reqPath.endsWith('.gemdrive-ls.tsv')) {
+
+        const fsPath = path.join(fsRoot, path.dirname(reqPath));
+
+        const tsv = await buildTsvListing(fsPath);
+
+        res.write(tsv);
+        res.end();
+      }
+      else if (reqPath.startsWith('/gemdrive/meta') && reqPath.endsWith('/ls.tsv')) {
 
         const gemPath = reqPath.slice('/gemdrive/meta'.length);
         const fsPath = path.join(fsRoot, path.dirname(gemPath));
