@@ -43,7 +43,7 @@ async function createHandler(options) {
     .build();
 
   const listeners = {};
-  const emit = (fullPathStr, event) => {
+  const emit = async (fullPathStr, event) => {
 
     let pathStr = fullPathStr;
     let path = parsePath(pathStr);
@@ -57,7 +57,7 @@ async function createHandler(options) {
 
       if (listeners[pathStr]) {
         for (const listener of listeners[pathStr]) {
-          if (pauth.canRead(listener.token, fullPathStr)) {
+          if (await pauth.canRead(listener.token, fullPathStr)) {
             listener.callback(event);
           }
         }
@@ -96,7 +96,7 @@ async function createHandler(options) {
       return;
     }
 
-    if (params['pauth-method'] !== undefined || reqPath.startsWith('/.gemdrive/auth')) {
+    if (params['pauth-method'] !== undefined || reqPath.startsWith('/.gemdrive/auth') || reqPath.endsWith('.gemdrive-acl.tsv')) {
       await pauth.handle(req, res, rootPath, token);
       return;
     } 
@@ -112,7 +112,7 @@ async function createHandler(options) {
 
     if (params.events === 'true') {
 
-      if (!perms.canRead(reqPath)) {
+      if (!await perms.canRead(reqPath)) {
         res.statusCode = 403;
         res.write("Unauthorized");
         res.end();
@@ -158,7 +158,7 @@ async function createHandler(options) {
         return;
       }
 
-      if (!perms.canRead(reqPath)) {
+      if (!await perms.canRead(reqPath)) {
         res.statusCode = 403;
         sendLoginPage(res);
         return;
@@ -215,7 +215,7 @@ async function createHandler(options) {
     }
     else if (req.method === 'PUT') {
 
-      if (!perms.canWrite(reqPath)) {
+      if (!await perms.canWrite(reqPath)) {
         res.statusCode = 403;
         res.write("Unauthorized");
         res.end();
