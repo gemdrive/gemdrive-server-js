@@ -170,7 +170,14 @@ async function createHandler(options) {
 
         const tsv = await buildTsvListing(fsPath);
 
-        res.write(tsv);
+        if (tsv !== null) {
+          res.write(tsv);
+        }
+        else {
+          res.statusCode = 404;
+          res.write("Not found");
+        }
+
         res.end();
       }
       else if (reqPath.startsWith('/gemdrive/meta') && reqPath.endsWith('/ls.tsv')) {

@@ -80,7 +80,6 @@ async function buildTsvListing(fsPath) {
     filenames = await fs.promises.readdir(fsPath);
   }
   catch (e) {
-    res.end();
     return null;
   }
 
