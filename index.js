@@ -65,9 +65,35 @@ async function createHandler(options) {
     }
   };
 
+  let domainMap;
+
+  try {
+    domainMap = JSON.parse(fs.readFileSync('domain_map.json'));
+  }
+  catch (e) {
+    console.error(e);
+    domainMap = {};
+  }
+
   return async function(req, res) {
     const u = url.parse(req.url); 
-    const reqPath = decodeURIComponent(u.pathname.slice(rootPath.length));
+
+    let hostname;
+    if (req.headers['x-forwarded-host']) {
+      hostname = parseHostname(req.headers['x-forwarded-host']);
+    }
+    else {
+      hostname = parseHostname(req.headers.host);
+    }
+
+    const inReqPath = decodeURIComponent(u.pathname.slice(rootPath.length));
+
+    let reqPath = inReqPath;
+    if (domainMap[hostname]) {
+      reqPath = domainMap[hostname] + inReqPath;
+    }
+
+    console.log(reqPath);
 
     if (reqPath.includes('//') || reqPath.includes('..')) {
       res.statusCode = 400;
@@ -97,7 +123,7 @@ async function createHandler(options) {
     }
 
     if (params['pauth-method'] !== undefined || reqPath.startsWith('/.gemdrive/auth') || reqPath.endsWith('.gemdrive-acl.tsv')) {
-      await pauth.handle(req, res, rootPath, token);
+      await pauth.handle(req, res, reqPath, rootPath, token);
       return;
     } 
 
@@ -421,6 +447,15 @@ async function sendGrantPage(res) {
 
   const f = fs.createReadStream(filePath);
   f.pipe(res);
+}
+
+function parseHostname(host) {
+  if (host.indexOf(':') > -1) {
+    return host.split(':')[0];
+  }
+  else {
+    return host;
+  }
 }
 
 
