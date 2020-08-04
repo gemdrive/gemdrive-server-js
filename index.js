@@ -3,7 +3,6 @@ const path = require('path');
 const url = require('url');
 const querystring = require('querystring');
 const http = require('https');
-const { renderHtmlDir } = require('./render_html_dir.js');
 const { PauthBuilder } = require('pauth');
 const { parseToken, parsePath, encodePath, buildTsvListing, buildGemDriveDir, getMime } = require('./utils.js');
 const { handleUpload } = require('./upload.js');
@@ -312,43 +311,15 @@ async function serveItem(req, res, fsRoot, rootPath, reqPath) {
     return;
   }
 
-  // render simple html interface
   if (stats.isDirectory()) {
-    let isWebDir = false;
-    const localRemfsPath = path.join(fsPath, 'remfs.json');
-    try {
-      const localRemfsDataText = await fs.promises.readFile(localRemfsPath, {
-        encoding: 'utf8',
-      });
-      const localRemfsData = JSON.parse(localRemfsDataText);
-      isWebDir = localRemfsData.ext.http && localRemfsData.ext.http.isWebDir;
-      redirect = localRemfsData.ext.http && localRemfsData.ext.http.redirect;
-
-      if (redirect) {
-        res.statusCode = 307;
-        res.setHeader('Location', redirect.location);
-        res.write("Temporary Redirect");
-        res.end();
-        return;
-      }
-    }
-    catch (e) {
-      //console.log(e);
-    }
-
-    if (isWebDir) {
-      const indexPath = path.join(fsPath, 'index.html');
-      const stream = fs.createReadStream(indexPath)
-      stream.on('error', (e) => {
-        res.statusCode = 404;
-        res.write("Not Found");
-        res.end();
-      });
-      stream.pipe(res);
-    }
-    else {
-      await renderHtmlDir(req, res, rootPath, reqPath, fsPath);
-    }
+    const indexPath = path.join(fsPath, 'index.html');
+    const stream = fs.createReadStream(indexPath)
+    stream.on('error', (e) => {
+      res.statusCode = 404;
+      res.write("Not Found");
+      res.end();
+    });
+    stream.pipe(res);
   }
   else {
 
