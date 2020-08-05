@@ -178,7 +178,7 @@ async function createHandler(options) {
         //}
       }
 
-      if (reqPath.startsWith('/.gemdrive/images')) {
+      if (reqPath.includes('.gemdrive-img-')) {
         handleImage(req, res, fsRoot, reqPath, pauth, emit);
         return;
       }
