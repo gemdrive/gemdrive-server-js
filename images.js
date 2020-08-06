@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
-const { parseToken, parsePath, encodePath, buildGemDriveDir } = require('./utils.js');
+const { parseToken, parsePath, encodePath } = require('./utils.js');
 
 
 async function handleImage(req, res, fsRoot, reqPath, pauth, emit) {
