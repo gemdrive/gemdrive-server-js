@@ -4,7 +4,7 @@ const url = require('url');
 const querystring = require('querystring');
 const http = require('https');
 const { PauthBuilder } = require('pauth');
-const { parseToken, parsePath, encodePath, buildTsvListing, buildGemDriveDir, getMime } = require('./utils.js');
+const { parseToken, parsePath, encodePath, buildTsvListing, buildJsonListing, getMime } = require('./utils.js');
 const { handleUpload } = require('./upload.js');
 const { handleDelete } = require('./delete.js');
 const { handleConcat } = require('./concat.js');
@@ -205,43 +205,14 @@ async function createHandler(options) {
 
         res.end();
       }
-      else if (reqPath.startsWith('/gemdrive/meta') && reqPath.endsWith('/ls.tsv')) {
-
-        const gemPath = reqPath.slice('/gemdrive/meta'.length);
-        const fsPath = path.join(fsRoot, path.dirname(gemPath));
-
-        const tsv = await buildTsvListing(fsPath);
-
-        res.write(tsv);
-        res.end();
-      }
-      else if (reqPath.endsWith('remfs.json')) {
+      else if (reqPath.endsWith('.gemdrive-ls.json')) {
 
         const fsPath = path.join(fsRoot, path.dirname(reqPath));
 
-        const remfs = await buildGemDriveDir(fsPath);
+        const remfs = await buildJsonListing(fsPath);
 
         if (remfs) {
           res.write(JSON.stringify(remfs, null, 2));
-        }
-        else {
-          res.statusCode = 404;
-          res.write("Not found");
-        }
-
-        res.end();
-      }
-      else if (reqPath.startsWith('/.gemdrive/meta') && reqPath.endsWith('gemdrive.json')) {
-
-        const gemPath = reqPath.slice('/.gemdrive/meta'.length);
-        const fsPath = path.join(fsRoot, path.dirname(gemPath));
-
-        console.log(fsPath);
-
-        const gemData = await buildGemDriveDir(fsPath);
-
-        if (gemData) {
-          res.write(JSON.stringify(gemData, null, 2));
         }
         else {
           res.statusCode = 404;

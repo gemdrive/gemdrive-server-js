@@ -113,7 +113,7 @@ async function buildTsvListing(fsPath) {
   return tsv;
 }
 
-async function buildGemDriveDir(fsPath) {
+async function buildJsonListing(fsPath) {
 
   let filenames;
   try {
@@ -124,7 +124,6 @@ async function buildGemDriveDir(fsPath) {
   }
 
   const gemData = {
-    type: 'dir',
     children: {},
   };
 
@@ -152,15 +151,14 @@ async function buildGemDriveDir(fsPath) {
     modTime = modIso.slice(0, -5) + 'Z';
 
     if (stats.isDirectory()) {
-      gemData.children[filename] = {
-        type: 'dir',
-        size: stats.size,
+      gemData.children[filename + '/'] = {
+        size: 0,
+        modTime,
       };
-      //gemData.children[filename] = await buildGemDriveDir(childFsPath);
+      //gemData.children[filename] = await buildJsonListing(childFsPath);
     }
     else {
       gemData.children[filename] = {
-        type: 'file',
         size: stats.size,
         modTime,
       };
@@ -211,6 +209,6 @@ module.exports = {
   parsePath,
   encodePath,
   buildTsvListing,
-  buildGemDriveDir,
+  buildJsonListing,
   getMime,
 };
