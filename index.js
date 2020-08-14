@@ -239,6 +239,11 @@ async function createHandler(options) {
         const fsPath = fsRoot + reqPath;
 
         try {
+          const options = {};
+          if (params.recursive === 'true') {
+            options.recursive = true;
+          }
+
           await fs.promises.mkdir(fsPath);
           emit(reqPath, {
             type: 'create',
