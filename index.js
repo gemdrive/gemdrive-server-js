@@ -92,7 +92,9 @@ async function createHandler(options) {
       reqPath = domainMap[hostname] + inReqPath;
     }
 
-    console.log(reqPath);
+    const timestamp = new Date().toISOString().split('.')[0] + 'Z';
+    const logStr = `${timestamp} ${req.method} ${reqPath}`;
+    console.log(logStr);
 
     if (reqPath.includes('//') || reqPath.includes('..')) {
       res.statusCode = 400;

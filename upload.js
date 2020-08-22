@@ -16,7 +16,6 @@ async function handleUpload(req, res, fsRoot, reqPath, pauth, emit) {
     return;
   }
 
-  console.log(reqPath);
   const fsPath = fsRoot + '/' + reqPath;
   const pathParts = parsePath(reqPath);
 
