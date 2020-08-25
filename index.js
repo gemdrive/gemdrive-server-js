@@ -64,14 +64,14 @@ async function createHandler(options) {
     }
   };
 
-  let domainMap;
-
+  const configPath = 'gemdrive_config.json';
+  let config;
   try {
-    domainMap = JSON.parse(fs.readFileSync('domain_map.json'));
+    const configText = await fs.promises.readFile(configPath);
+    config = JSON.parse(configText);
   }
   catch (e) {
-    console.error(e);
-    domainMap = {};
+    throw new Error("No config provided");
   }
 
   return async function(req, res) {
@@ -88,8 +88,8 @@ async function createHandler(options) {
     const inReqPath = decodeURIComponent(u.pathname.slice(rootPath.length));
 
     let reqPath = inReqPath;
-    if (domainMap[hostname]) {
-      reqPath = domainMap[hostname] + inReqPath;
+    if (config.domainMap && config.domainMap[hostname]) {
+      reqPath = config.domainMap[hostname] + inReqPath;
     }
 
     const timestamp = new Date().toISOString().split('.')[0] + 'Z';
