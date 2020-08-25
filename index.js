@@ -123,7 +123,8 @@ async function createHandler(options) {
       return;
     }
 
-    if (params['pauth-method'] !== undefined || reqPath.startsWith('/.gemdrive/auth') || reqPath.endsWith('.gemdrive-acl.tsv')) {
+    if (params['pauth-method'] !== undefined || reqPath.startsWith('/.gemdrive/auth') ||
+          reqPath.endsWith('.gemdrive-acl.json')) {
       await pauth.handle(req, res, reqPath, rootPath, token);
       return;
     } 
