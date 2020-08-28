@@ -124,7 +124,8 @@ async function createHandler(options) {
     }
 
     if (params['pauth-method'] !== undefined || reqPath.startsWith('/.gemdrive/auth') ||
-          reqPath.endsWith('.gemdrive-acl.json') || reqPath.endsWith('.gemdrive-authorize.json')) {
+          reqPath.endsWith('.gemdrive-acl.json') || reqPath.endsWith('.gemdrive-authorize.json') ||
+          reqPath.endsWith('.gemdrive-auth')) {
       await pauth.handle(req, res, reqPath, rootPath, token);
       return;
     } 
