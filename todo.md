@@ -24,3 +24,6 @@
 * Properly handle permissions for /.remfs/images/. They should match the
   stripped path.
   * I think this is fixed?
+* Implement upload handling that is robust enough I trust it with a genome.
+  For example it needs to be able to resume. Probably do things in small
+  chunks.
