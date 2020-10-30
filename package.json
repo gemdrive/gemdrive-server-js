@@ -1,6 +1,6 @@
 {
   "name": "gemdrive-server",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -12,7 +12,7 @@
   "author": "Anders Pitman",
   "license": "MIT",
   "dependencies": {
-    "pauth": "0.3.0",
+    "pauth": "0.4.0",
     "sharp": "^0.25.3"
   }
 }
