@@ -4,7 +4,8 @@ const url = require('url');
 const querystring = require('querystring');
 const http = require('https');
 const { PauthBuilder } = require('pauth');
-const { parseToken, parsePath, encodePath, buildTsvListing, buildJsonListing, getMime } = require('./utils.js');
+const { getType } = require('mime');
+const { parseToken, parsePath, encodePath, buildTsvListing, buildJsonListing } = require('./utils.js');
 const { handleUpload } = require('./upload.js');
 const { handleDelete } = require('./delete.js');
 const { handleConcat } = require('./concat.js');
@@ -340,7 +341,7 @@ async function serveItem(req, res, fsRoot, rootPath, reqPath) {
     res.setHeader('Accept-Ranges', 'bytes');
     //res.setHeader('Content-Type', 'application/octet-stream');
 
-    const mime = getMime(path.extname(reqPath));
+    const mime = getType(path.extname(reqPath));
     if (mime) {
       res.setHeader('Content-Type', mime);
     }

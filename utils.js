@@ -184,31 +184,10 @@ async function readLocalRemfs(fsPath) {
   }
 }
 
-function getMime(ext) {
-  switch (ext) {
-    case '.js':
-      return 'application/javascript';
-    case '.json':
-      return 'application/json';
-    case '.html':
-      return 'text/html';
-    case '.css':
-      return 'text/css';
-    case '.jpeg':
-    case '.jpg':
-    case '.JPEG':
-    case '.JPG':
-      return 'image/jpeg';
-    case '.svg':
-      return 'image/svg+xml';
-  }
-}
-
 module.exports = {
   parseToken,
   parsePath,
   encodePath,
   buildTsvListing,
   buildJsonListing,
-  getMime,
 };

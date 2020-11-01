@@ -12,6 +12,7 @@
   "author": "Anders Pitman",
   "license": "MIT",
   "dependencies": {
+    "mime": "^2.4.6",
     "pauth": "0.4.0",
     "sharp": "^0.25.3"
   }
